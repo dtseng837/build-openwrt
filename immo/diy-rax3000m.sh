@@ -8,10 +8,16 @@ sed -i 's,-SNAPSHOT,,g' include/version.mk
 sed -i 's,-SNAPSHOT,,g' package/base-files/image-config.in
 
 ## 修改openwrt登陆地址,把下面的192.168.11.1修改成你想要的就可以了
-sed -i 's/192.168.1.1/192.168.11.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.6.1/g' package/base-files/files/bin/config_generate
 
 # rm -rf package/new
 mkdir -p package/new
+
+# 修改主机名字，把OpenWrt-123修改你喜欢的就行（不能纯数字或者使用中文）
+sed -i '/uci commit system/i\uci set system.@system[0].hostname='Kinsum'' package/lean/default-settings/files/zzz-default-settings
+
+# 版本号里显示一个自己的名字（kinsum build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
+sed -i "s/OpenWrt /Kinsum Build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
 
 ## set default-setting
 # cp -rf $GITHUB_WORKSPACE/patches/default-settings package/new/default-settings
@@ -40,6 +46,12 @@ rm -rf feeds/luci/applications/luci-app-socat
 git clone --depth 1 https://github.com/chenmozhijin/luci-app-socat package/new/chenmozhijin-socat
 mv -n package/new/chenmozhijin-socat/luci-app-socat package/new/
 rm -rf package/new/chenmozhijin-socat
+
+
+#添加额外软件包
+#git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/luci-app-adguardhome
+#git clone https://github.com/vernesong/OpenClash.git package/luci-app-openclash
+git clone https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter
 
 ## Add luci-app-ddns-go
 rm -rf feeds/luci/applications/luci-app-ddns-go
